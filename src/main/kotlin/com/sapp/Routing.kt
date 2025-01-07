@@ -1,5 +1,6 @@
 package com.sapp
 
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
 import io.ktor.server.plugins.statuspages.*
@@ -26,6 +27,19 @@ fun Application.configureRouting() {
 
         get("/error-test") {
             throw IllegalStateException("Too Busy")
+        }
+
+        get("/tasks") {
+            call.respondText(
+                contentType = ContentType.parse("text/html"),
+                text = """
+                <h3>TODO:</h3>
+                <ol>
+                    <li>A table of all the tasks</li>
+                    <li>A form to submit new tasks</li>
+                </ol>
+                """.trimIndent()
+            )
         }
     }
 }
