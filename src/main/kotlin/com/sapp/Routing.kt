@@ -35,69 +35,73 @@ fun Application.configureRouting() {
             throw IllegalStateException("Too Busy")
         }
 
-        post("/tasks") {
-            val formContent = call.receiveParameters()
-
-            val params = Triple(
-                formContent["name"] ?: "",
-                formContent["description"] ?: "",
-                formContent["priority"] ?: ""
-            )
-
-            if (params.toList().any { it.isEmpty() }) {
-                call.respond(HttpStatusCode.BadRequest)
-                return@post
-            }
-
-            try {
-                val priority = Priority.valueOf(params.third.uppercase())
-                TaskRepository.addTask(
-                    Task(
-                        params.first,
-                        params.second,
-                        priority
-                    )
-                )
-
-                call.respond(HttpStatusCode.NoContent)
-            } catch (ex: IllegalArgumentException) {
-                call.respond(HttpStatusCode.BadRequest)
-            } catch (ex: IllegalStateException) {
-                call.respond(HttpStatusCode.BadRequest)
-            }
-        }
-
-        get("/tasks") {
-            val tasks = TaskRepository.allTasks()
-            call.respondText(
-                contentType = ContentType.parse("text/html"),
-                text = tasks.tasksAsTable()
-            )
-        }
-
-        get("/tasks/byPriority/{priority}") {
-            val priorityAsText = call.parameters["priority"]
-            if (priorityAsText == null) {
-                call.respond(HttpStatusCode.BadRequest)
-                return@get
-            }
-
-            try {
-                val priority = Priority.valueOf(priorityAsText.uppercase())
-                val tasks = TaskRepository.tasksByPriority(priority)
-
-                if (tasks.isEmpty()) {
-                    call.respond(HttpStatusCode.NotFound)
-                    return@get
-                }
-
+        route("/tasks") {
+            get {
+                val tasks = TaskRepository.allTasks()
                 call.respondText(
                     contentType = ContentType.parse("text/html"),
                     text = tasks.tasksAsTable()
                 )
+            }
 
-            } catch (ex: IllegalArgumentException) {
-                call.respond(HttpStatusCode.BadRequest)
+            //TODO: Filter by name
+
+            get("/byPriority/{priority}") {
+                val priorityAsText = call.parameters["priority"]
+                if (priorityAsText == null) {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@get
+                }
+
+                try {
+                    val priority = Priority.valueOf(priorityAsText.uppercase())
+                    val tasks = TaskRepository.tasksByPriority(priority)
+
+                    if (tasks.isEmpty()) {
+                        call.respond(HttpStatusCode.NotFound)
+                        return@get
+                    }
+
+                    call.respondText(
+                        contentType = ContentType.parse("text/html"),
+                        text = tasks.tasksAsTable()
+                    )
+
+                } catch (ex: IllegalArgumentException) {
+                    call.respond(HttpStatusCode.BadRequest)
+                }
+            }
+
+            post {
+                val formContent = call.receiveParameters()
+
+                val params = Triple(
+                    formContent["name"] ?: "",
+                    formContent["description"] ?: "",
+                    formContent["priority"] ?: ""
+                )
+
+                if (params.toList().any { it.isEmpty() }) {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@post
+                }
+
+                try {
+                    val priority = Priority.valueOf(params.third.uppercase())
+                    TaskRepository.addTask(
+                        Task(
+                            params.first,
+                            params.second,
+                            priority
+                        )
+                    )
+
+                    call.respond(HttpStatusCode.NoContent)
+                } catch (ex: IllegalArgumentException) {
+                    call.respond(HttpStatusCode.BadRequest)
+                } catch (ex: IllegalStateException) {
+                    call.respond(HttpStatusCode.BadRequest)
+                }
             }
         }
     }
