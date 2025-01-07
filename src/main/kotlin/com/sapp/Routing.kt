@@ -1,12 +1,14 @@
 package com.sapp
 
 import com.sapp.model.Priority
+import com.sapp.model.Task
 import com.sapp.model.TaskRepository
 import com.sapp.model.tasksAsTable
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
 import io.ktor.server.plugins.statuspages.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
@@ -31,6 +33,38 @@ fun Application.configureRouting() {
 
         get("/error-test") {
             throw IllegalStateException("Too Busy")
+        }
+
+        post("/tasks") {
+            val formContent = call.receiveParameters()
+
+            val params = Triple(
+                formContent["name"] ?: "",
+                formContent["description"] ?: "",
+                formContent["priority"] ?: ""
+            )
+
+            if (params.toList().any { it.isEmpty() }) {
+                call.respond(HttpStatusCode.BadRequest)
+                return@post
+            }
+
+            try {
+                val priority = Priority.valueOf(params.third.uppercase())
+                TaskRepository.addTask(
+                    Task(
+                        params.first,
+                        params.second,
+                        priority
+                    )
+                )
+
+                call.respond(HttpStatusCode.NoContent)
+            } catch (ex: IllegalArgumentException) {
+                call.respond(HttpStatusCode.BadRequest)
+            } catch (ex: IllegalStateException) {
+                call.respond(HttpStatusCode.BadRequest)
+            }
         }
 
         get("/tasks") {
