@@ -22,3 +22,11 @@ fun List<Task>.tasksAsTable() = this.joinToString(
     separator = "\n",
     transform = Task::taskAsRow
 )
+
+fun Task.taskAsTable() = """
+        <table rules=\"all\">
+            <tr>
+                <td>$name</td><td>$description</td><td>$priority</td>
+            </tr>
+        </table>
+""".trimIndent()

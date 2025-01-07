@@ -1,9 +1,6 @@
 package com.sapp
 
-import com.sapp.model.Priority
-import com.sapp.model.Task
-import com.sapp.model.TaskRepository
-import com.sapp.model.tasksAsTable
+import com.sapp.model.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
@@ -44,7 +41,29 @@ fun Application.configureRouting() {
                 )
             }
 
-            //TODO: Filter by name
+            get("/byName/{name}") {
+                val parameterName = call.parameters["name"]
+                if (parameterName == null) {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@get
+                }
+
+                try {
+                    val tasks = TaskRepository.taskByName(parameterName)
+                    if (tasks == null) {
+                        call.respond(HttpStatusCode.NotFound)
+                        return@get
+                    }
+
+                    call.respondText(
+                        contentType = ContentType.parse("text/html"),
+                        text = tasks.taskAsTable()
+                    )
+
+                } catch (ex: IllegalArgumentException) {
+                    call.respond(HttpStatusCode.BadRequest)
+                }
+            }
 
             get("/byPriority/{priority}") {
                 val priorityAsText = call.parameters["priority"]
