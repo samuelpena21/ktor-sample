@@ -21,6 +21,7 @@ repositories {
 dependencies {
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
+    implementation(libs.ktor.server.status.pages)
     implementation(libs.logback.classic)
     implementation(libs.ktor.server.config.yaml)
     testImplementation(libs.ktor.server.test.host)
