@@ -2,6 +2,7 @@ package com.sapp
 
 import com.sapp.model.*
 import io.ktor.http.*
+import io.ktor.serialization.*
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
 import io.ktor.server.plugins.statuspages.*
@@ -35,10 +36,7 @@ fun Application.configureRouting() {
         route("/tasks") {
             get {
                 val tasks = TaskRepository.allTasks()
-                call.respondText(
-                    contentType = ContentType.parse("text/html"),
-                    text = tasks.tasksAsTable()
-                )
+                call.respond(tasks)
             }
 
             get("/byName/{name}") {
@@ -48,21 +46,12 @@ fun Application.configureRouting() {
                     return@get
                 }
 
-                try {
-                    val tasks = TaskRepository.taskByName(parameterName)
-                    if (tasks == null) {
-                        call.respond(HttpStatusCode.NotFound)
-                        return@get
-                    }
-
-                    call.respondText(
-                        contentType = ContentType.parse("text/html"),
-                        text = tasks.taskAsTable()
-                    )
-
-                } catch (ex: IllegalArgumentException) {
-                    call.respond(HttpStatusCode.BadRequest)
+                val task = TaskRepository.taskByName(parameterName)
+                if (task == null) {
+                    call.respond(HttpStatusCode.NotFound)
+                    return@get
                 }
+                call.respond(task)
             }
 
             get("/byPriority/{priority}") {
@@ -81,44 +70,35 @@ fun Application.configureRouting() {
                         return@get
                     }
 
-                    call.respondText(
-                        contentType = ContentType.parse("text/html"),
-                        text = tasks.tasksAsTable()
-                    )
+                    call.respond(tasks)
 
                 } catch (ex: IllegalArgumentException) {
                     call.respond(HttpStatusCode.BadRequest)
                 }
             }
 
-            post {
-                val formContent = call.receiveParameters()
-
-                val params = Triple(
-                    formContent["name"] ?: "",
-                    formContent["description"] ?: "",
-                    formContent["priority"] ?: ""
-                )
-
-                if (params.toList().any { it.isEmpty() }) {
+            delete("/{taskName}") {
+                val name = call.parameters["taskName"]
+                if (name == null) {
                     call.respond(HttpStatusCode.BadRequest)
-                    return@post
+                    return@delete
                 }
 
-                try {
-                    val priority = Priority.valueOf(params.third.uppercase())
-                    TaskRepository.addTask(
-                        Task(
-                            params.first,
-                            params.second,
-                            priority
-                        )
-                    )
-
+                if (TaskRepository.removeTask(name)) {
                     call.respond(HttpStatusCode.NoContent)
-                } catch (ex: IllegalArgumentException) {
-                    call.respond(HttpStatusCode.BadRequest)
+                } else {
+                    call.respond(HttpStatusCode.NotFound)
+                }
+            }
+
+            post {
+                try {
+                    val task = call.receive<Task>()
+                    TaskRepository.addTask(task)
+                    call.respond(HttpStatusCode.Created)
                 } catch (ex: IllegalStateException) {
+                    call.respond(HttpStatusCode.BadRequest)
+                } catch (ex: JsonConvertException) {
                     call.respond(HttpStatusCode.BadRequest)
                 }
             }

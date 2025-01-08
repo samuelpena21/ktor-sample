@@ -1,5 +1,8 @@
 package com.sapp.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Task(
     val name: String,
     val description: String,
@@ -9,24 +12,3 @@ data class Task(
 enum class Priority {
     LOW, MEDIUM, HIGH, VITAL
 }
-
-fun Task.taskAsRow() = """
-    <tr>
-        <td>$name</td><td>$description</td><td>$priority</td>
-    </tr>
-    """.trimIndent()
-
-fun List<Task>.tasksAsTable() = this.joinToString(
-    prefix = "<table rules=\"all\">",
-    postfix = "</table>",
-    separator = "\n",
-    transform = Task::taskAsRow
-)
-
-fun Task.taskAsTable() = """
-        <table rules=\"all\">
-            <tr>
-                <td>$name</td><td>$description</td><td>$priority</td>
-            </tr>
-        </table>
-""".trimIndent()
