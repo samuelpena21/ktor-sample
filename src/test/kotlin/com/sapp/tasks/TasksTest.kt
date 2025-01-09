@@ -1,8 +1,9 @@
-package com.sapp
+package com.sapp.tasks
 
 
 import com.sapp.model.Priority
 import com.sapp.model.Task
+import com.sapp.module
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
