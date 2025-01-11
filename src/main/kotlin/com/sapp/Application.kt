@@ -10,4 +10,5 @@ fun Application.module() {
     configureSerialization()
     configureTemplating()
     configureRouting()
+    configureSockets()
 }

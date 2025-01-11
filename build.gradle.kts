@@ -21,6 +21,7 @@ repositories {
 
 dependencies {
     implementation(libs.ktor.server.core)
+    implementation(libs.ktor.server.websockets)
     implementation(libs.ktor.server.thymeleaf)
     implementation(libs.ktor.server.host.common)
     implementation(libs.ktor.server.content.negotiation)
