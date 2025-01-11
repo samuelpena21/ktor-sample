@@ -10,6 +10,7 @@ import io.ktor.server.websocket.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
+import java.util.*
 import kotlin.time.Duration.Companion.seconds
 
 fun Application.configureSockets() {
@@ -21,14 +22,32 @@ fun Application.configureSockets() {
         masking = false
     }
     routing {
+        val sessions = Collections.synchronizedList<WebSocketServerSession>(ArrayList())
+
         webSocket("/tasks") {
-
-            for (task in TaskRepository.allTasks()) {
-                sendSerialized(task)
-                delay(1000)
-            }
-
+            sendAllTasks()
             close(CloseReason(CloseReason.Codes.NORMAL, "All done"))
         }
+
+        webSocket("/tasks2") {
+            sessions.add(this)
+            sendAllTasks()
+
+            while (true) {
+                val newTask = receiveDeserialized<Task>()
+                TaskRepository.addTask(newTask)
+                for (session in sessions) {
+                    session.sendSerialized(newTask)
+                }
+
+            }
+        }
+    }
+}
+
+private suspend fun DefaultWebSocketServerSession.sendAllTasks() {
+    for (task in TaskRepository.allTasks()) {
+        sendSerialized(task)
+        delay(1000)
     }
 }
