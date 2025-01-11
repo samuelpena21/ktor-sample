@@ -2,6 +2,7 @@ package com.sapp
 
 import com.sapp.model.Priority
 import com.sapp.model.Task
+import com.sapp.model.TaskRepository
 import io.ktor.serialization.kotlinx.*
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
@@ -21,14 +22,8 @@ fun Application.configureSockets() {
     }
     routing {
         webSocket("/tasks") {
-            val tasks = listOf(
-                Task("cleaning", "Clean the house", Priority.LOW),
-                Task("gardening", "Mow the lawn", Priority.MEDIUM),
-                Task("shopping", "Buy the groceries", Priority.HIGH),
-                Task("painting", "Paint the fence", Priority.MEDIUM)
-            )
 
-            for (task in tasks) {
+            for (task in TaskRepository.allTasks()) {
                 sendSerialized(task)
                 delay(1000)
             }
