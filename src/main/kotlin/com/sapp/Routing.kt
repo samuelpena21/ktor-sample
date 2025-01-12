@@ -10,7 +10,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
-fun Application.configureRouting() {
+fun Application.configureRouting(repository: TaskRepository) {
     install(StatusPages) {
         exception<IllegalStateException> { call, cause ->
             call.respondText("App in illegal state as ${cause.message}")
@@ -35,7 +35,7 @@ fun Application.configureRouting() {
 
         route("/tasks") {
             get {
-                val tasks = TaskRepository.allTasks()
+                val tasks = repository.allTasks()
                 call.respond(tasks)
             }
 
@@ -46,7 +46,7 @@ fun Application.configureRouting() {
                     return@get
                 }
 
-                val task = TaskRepository.taskByName(parameterName)
+                val task = repository.taskByName(parameterName)
                 if (task == null) {
                     call.respond(HttpStatusCode.NotFound)
                     return@get
@@ -63,7 +63,7 @@ fun Application.configureRouting() {
 
                 try {
                     val priority = Priority.valueOf(priorityAsText.uppercase())
-                    val tasks = TaskRepository.tasksByPriority(priority)
+                    val tasks = repository.tasksByPriority(priority)
 
                     if (tasks.isEmpty()) {
                         call.respond(HttpStatusCode.NotFound)
@@ -84,7 +84,7 @@ fun Application.configureRouting() {
                     return@delete
                 }
 
-                if (TaskRepository.removeTask(name)) {
+                if (repository.removeTask(name)) {
                     call.respond(HttpStatusCode.NoContent)
                 } else {
                     call.respond(HttpStatusCode.NotFound)
@@ -94,7 +94,7 @@ fun Application.configureRouting() {
             post {
                 try {
                     val task = call.receive<Task>()
-                    TaskRepository.addTask(task)
+                    repository.addTask(task)
                     call.respond(HttpStatusCode.Created)
                 } catch (ex: IllegalStateException) {
                     call.respond(HttpStatusCode.BadRequest)

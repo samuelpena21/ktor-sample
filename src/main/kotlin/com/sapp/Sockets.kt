@@ -1,8 +1,7 @@
 package com.sapp
 
-import com.sapp.model.Priority
 import com.sapp.model.Task
-import com.sapp.model.TaskRepository
+import com.sapp.model.FakeTaskRepository
 import io.ktor.serialization.kotlinx.*
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
@@ -35,7 +34,7 @@ fun Application.configureSockets() {
 
             while (true) {
                 val newTask = receiveDeserialized<Task>()
-                TaskRepository.addTask(newTask)
+                FakeTaskRepository.addTask(newTask)
                 for (session in sessions) {
                     session.sendSerialized(newTask)
                 }
@@ -46,7 +45,7 @@ fun Application.configureSockets() {
 }
 
 private suspend fun DefaultWebSocketServerSession.sendAllTasks() {
-    for (task in TaskRepository.allTasks()) {
+    for (task in FakeTaskRepository.allTasks()) {
         sendSerialized(task)
         delay(1000)
     }

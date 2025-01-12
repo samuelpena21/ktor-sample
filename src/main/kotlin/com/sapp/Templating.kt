@@ -2,7 +2,7 @@ package com.sapp
 
 import com.sapp.model.Priority
 import com.sapp.model.Task
-import com.sapp.model.TaskRepository
+import com.sapp.model.FakeTaskRepository
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -26,7 +26,7 @@ fun Application.configureTemplating() {
 
         route("/tasks") {
             get {
-                val tasks = TaskRepository.allTasks()
+                val tasks = FakeTaskRepository.allTasks()
                 call.respond(
                     ThymeleafContent("all-tasks", mapOf("tasks" to tasks))
                 )
@@ -39,7 +39,7 @@ fun Application.configureTemplating() {
                     return@get
                 }
 
-                val task = TaskRepository.taskByName(name)
+                val task = FakeTaskRepository.taskByName(name)
                 if (task == null) {
                     call.respond(HttpStatusCode.NotFound)
                     return@get
@@ -59,7 +59,7 @@ fun Application.configureTemplating() {
 
                 try {
                     val priority = Priority.valueOf(priorityAsText.uppercase())
-                    val tasks = TaskRepository.tasksByPriority(priority)
+                    val tasks = FakeTaskRepository.tasksByPriority(priority)
 
                     if (tasks.isEmpty()) {
                         call.respond(HttpStatusCode.NotFound)
@@ -89,14 +89,14 @@ fun Application.configureTemplating() {
                 }
                 try {
                     val priority = Priority.valueOf(params.third.uppercase())
-                    TaskRepository.addTask(
+                    FakeTaskRepository.addTask(
                         Task(
                             params.first,
                             params.second,
                             priority
                         )
                     )
-                    val tasks = TaskRepository.allTasks()
+                    val tasks = FakeTaskRepository.allTasks()
                     call.respond(
                         ThymeleafContent("all-tasks", mapOf("tasks" to tasks))
                     )
