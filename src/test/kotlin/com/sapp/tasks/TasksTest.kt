@@ -76,7 +76,7 @@ class TasksTest {
             setBody(task)
         }
 
-        assertEquals(HttpStatusCode.Created, response1.status)
+        assertEquals(HttpStatusCode.NoContent, response1.status)
 
         val response2 = client.get("/tasks")
         assertEquals(HttpStatusCode.OK, response2.status)

@@ -11,7 +11,7 @@ fun Application.module() {
     val repository = FakeTaskRepository()
 
     configureSerialization(repository)
-    configureTemplating()
+    configureTemplating(repository)
     configureRouting(repository)
-    configureSockets()
+    configureSockets(repository)
 }

@@ -3,6 +3,7 @@ package com.sapp.tasks
 import com.sapp.configureRouting
 import com.sapp.configureSerialization
 import com.sapp.configureSockets
+import com.sapp.model.FakeTaskRepository
 import com.sapp.model.Priority
 import com.sapp.model.Task
 import io.ktor.client.plugins.contentnegotiation.*
@@ -20,9 +21,9 @@ class TasksSocketTest {
     @Test
     fun testRoot() = testApplication {
         application {
-            configureRouting()
-            configureSerialization()
-            configureSockets()
+            configureRouting(FakeTaskRepository())
+            configureSerialization(FakeTaskRepository())
+            configureSockets(FakeTaskRepository())
         }
 
         val client = createClient {

@@ -2,7 +2,7 @@ package com.sapp
 
 import com.sapp.model.Priority
 import com.sapp.model.Task
-import com.sapp.model.FakeTaskRepository
+import com.sapp.model.TaskRepository
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -11,7 +11,7 @@ import io.ktor.server.routing.*
 import io.ktor.server.thymeleaf.*
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver
 
-fun Application.configureTemplating() {
+fun Application.configureTemplating(repository: TaskRepository) {
     install(Thymeleaf) {
         setTemplateResolver(ClassLoaderTemplateResolver().apply {
             prefix = "templates/thymeleaf/"
@@ -26,7 +26,7 @@ fun Application.configureTemplating() {
 
         route("/tasks") {
             get {
-                val tasks = FakeTaskRepository.allTasks()
+                val tasks = repository.allTasks()
                 call.respond(
                     ThymeleafContent("all-tasks", mapOf("tasks" to tasks))
                 )
@@ -39,7 +39,7 @@ fun Application.configureTemplating() {
                     return@get
                 }
 
-                val task = FakeTaskRepository.taskByName(name)
+                val task = repository.taskByName(name)
                 if (task == null) {
                     call.respond(HttpStatusCode.NotFound)
                     return@get
@@ -59,7 +59,7 @@ fun Application.configureTemplating() {
 
                 try {
                     val priority = Priority.valueOf(priorityAsText.uppercase())
-                    val tasks = FakeTaskRepository.tasksByPriority(priority)
+                    val tasks = repository.tasksByPriority(priority)
 
                     if (tasks.isEmpty()) {
                         call.respond(HttpStatusCode.NotFound)
@@ -89,14 +89,14 @@ fun Application.configureTemplating() {
                 }
                 try {
                     val priority = Priority.valueOf(params.third.uppercase())
-                    FakeTaskRepository.addTask(
+                    repository.addTask(
                         Task(
                             params.first,
                             params.second,
                             priority
                         )
                     )
-                    val tasks = FakeTaskRepository.allTasks()
+                    val tasks = repository.allTasks()
                     call.respond(
                         ThymeleafContent("all-tasks", mapOf("tasks" to tasks))
                     )
