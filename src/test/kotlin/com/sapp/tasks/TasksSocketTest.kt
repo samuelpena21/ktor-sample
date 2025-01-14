@@ -21,9 +21,10 @@ class TasksSocketTest {
     @Test
     fun testRoot() = testApplication {
         application {
-            configureRouting(FakeTaskRepository())
-            configureSerialization(FakeTaskRepository())
-            configureSockets(FakeTaskRepository())
+            val repository = FakeTaskRepository()
+            configureRouting(repository)
+            configureSerialization(repository)
+            configureSockets(repository)
         }
 
         val client = createClient {

@@ -1,22 +1,29 @@
 package com.sapp.tasks
 
 
+import com.sapp.configureRouting
+import com.sapp.configureSerialization
+import com.sapp.model.FakeTaskRepository
 import com.sapp.model.Priority
 import com.sapp.model.Task
-import com.sapp.module
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.testing.*
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertContains
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
 
 class TasksTest {
     @Test
     fun tasksCanBeFoundByPriority() = testApplication {
         application {
-            module()
+            val repository = FakeTaskRepository()
+            configureSerialization(repository)
+            configureRouting(repository)
         }
 
         val client = createClient {
@@ -39,7 +46,9 @@ class TasksTest {
     @Test
     fun invalidPriorityProduces400() = testApplication {
         application {
-            module()
+            val repository = FakeTaskRepository()
+            configureSerialization(repository)
+            configureRouting(repository)
         }
 
         val response = client.get("/tasks/byPriority/Invalid")
@@ -49,7 +58,9 @@ class TasksTest {
     @Test
     fun unusedPriorityProduces404() = testApplication {
         application {
-            module()
+            val repository = FakeTaskRepository()
+            configureSerialization(repository)
+            configureRouting(repository)
         }
 
         val response = client.get("/tasks/byPriority/Vital")
@@ -58,7 +69,11 @@ class TasksTest {
 
     @Test
     fun newTasksCanBeAdded() = testApplication {
-        application { module() }
+        application {
+            val repository = FakeTaskRepository()
+            configureSerialization(repository)
+            configureRouting(repository)
+        }
 
         val client = createClient {
             install(ContentNegotiation) {

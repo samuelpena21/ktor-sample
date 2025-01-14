@@ -2,6 +2,9 @@ package com.sapp.tasks
 
 import com.jayway.jsonpath.DocumentContext
 import com.jayway.jsonpath.JsonPath
+import com.sapp.configureRouting
+import com.sapp.configureSerialization
+import com.sapp.model.FakeTaskRepository
 import com.sapp.model.Priority
 import com.sapp.module
 import io.ktor.client.*
@@ -15,7 +18,9 @@ class TasksJsonPathTest {
     @Test
     fun tasksCanBeFound() = testApplication {
         application {
-            module()
+            val repository = FakeTaskRepository()
+            configureSerialization(repository)
+            configureRouting(repository)
         }
 
         val jsonDoc = client.getAsJsonPath("/tasks")
@@ -29,7 +34,9 @@ class TasksJsonPathTest {
     @Test
     fun tasksCanBeFoundByPriority() = testApplication {
         application {
-            module()
+            val repository = FakeTaskRepository()
+            configureSerialization(repository)
+            configureRouting(repository)
         }
         val priority = Priority.MEDIUM
         val jsonDoc = client.getAsJsonPath("/tasks/byPriority/$priority")
