@@ -34,6 +34,7 @@ dependencies {
     implementation(libs.h2)
     implementation(libs.exposed.core)
     implementation(libs.exposed.jdbc)
+    implementation(libs.exposed.dao)
     testImplementation(libs.json.path)
     testImplementation(libs.ktor.client.content.negotiation)
     testImplementation(libs.ktor.server.test.host)
