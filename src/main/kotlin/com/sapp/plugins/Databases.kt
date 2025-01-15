@@ -1,4 +1,4 @@
-package com.sapp
+package com.sapp.plugins
 
 import io.ktor.server.application.*
 import org.jetbrains.exposed.sql.Database

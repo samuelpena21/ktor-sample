@@ -1,6 +1,7 @@
 package com.sapp
 
-import com.sapp.model.FakeTaskRepository
+import com.sapp.model.PostgresTaskRepository
+import com.sapp.plugins.*
 import io.ktor.server.application.*
 
 fun main(args: Array<String>) {
@@ -8,8 +9,9 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
-    val repository = FakeTaskRepository()
+    val repository = PostgresTaskRepository()
 
+    configureDatabases()
     configureSerialization(repository)
     configureTemplating(repository)
     configureRouting(repository)

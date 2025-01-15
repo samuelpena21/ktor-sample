@@ -1,7 +1,6 @@
-package com.sapp
+package com.sapp.plugins
 
 import com.sapp.model.Task
-import com.sapp.model.FakeTaskRepository
 import com.sapp.model.TaskRepository
 import io.ktor.serialization.kotlinx.*
 import io.ktor.server.application.*

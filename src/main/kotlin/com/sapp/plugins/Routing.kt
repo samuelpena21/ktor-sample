@@ -1,4 +1,4 @@
-package com.sapp
+package com.sapp.plugins
 
 import com.sapp.model.*
 import io.ktor.http.*

@@ -1,8 +1,8 @@
 package com.sapp.tasks
 
 
-import com.sapp.configureRouting
-import com.sapp.configureSerialization
+import com.sapp.plugins.configureRouting
+import com.sapp.plugins.configureSerialization
 import com.sapp.model.FakeTaskRepository
 import com.sapp.model.Priority
 import com.sapp.model.Task

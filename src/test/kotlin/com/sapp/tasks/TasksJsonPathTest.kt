@@ -2,11 +2,10 @@ package com.sapp.tasks
 
 import com.jayway.jsonpath.DocumentContext
 import com.jayway.jsonpath.JsonPath
-import com.sapp.configureRouting
-import com.sapp.configureSerialization
+import com.sapp.plugins.configureRouting
+import com.sapp.plugins.configureSerialization
 import com.sapp.model.FakeTaskRepository
 import com.sapp.model.Priority
-import com.sapp.module
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
