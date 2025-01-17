@@ -4,3 +4,8 @@ ktor:
             - com.sapp.ApplicationKt.module
     deployment:
         port: 9292
+storage:
+    driverClassName: "org.postgresql.Driver"
+    jdbcURL: "jdbc:postgresql://localhost:5432/ktor_tutorial_db"
+    user: "postgres"
+    password: "password"

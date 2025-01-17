@@ -11,7 +11,7 @@ fun main(args: Array<String>) {
 fun Application.module() {
     val repository = PostgresTaskRepository()
 
-    configureDatabases()
+    configureDatabases(environment.config)
     configureSerialization(repository)
     configureTemplating(repository)
     configureRouting(repository)
