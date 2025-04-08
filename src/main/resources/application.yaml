@@ -6,6 +6,6 @@ ktor:
         port: 9292
 storage:
     driverClassName: "org.postgresql.Driver"
-    jdbcURL: "jdbc:postgresql://localhost:5432/ktor_tutorial_db"
+    jdbcURL: "jdbc:postgresql://localhost:5431/task_db"
     user: "postgres"
-    password: "password"
+    password: "1234"

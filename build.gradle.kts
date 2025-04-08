@@ -9,10 +9,25 @@ group = "com.sapp"
 version = "0.0.1"
 
 application {
-    mainClass.set("io.ktor.server.netty.EngineMain")
+    mainClass.set("com.sapp.ApplicationKt")
 
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
+}
+
+ktor {
+    docker {
+        portMappings.set(listOf(
+            io.ktor.plugin.features.DockerPortMapping(
+                outsideDocker = 9292,
+                insideDocker = 9292,
+                protocol = io.ktor.plugin.features.DockerPortMappingProtocol.TCP
+            )
+        ))
+    }
+    fatJar {
+        archiveFileName.set("fat.jar")
+    }
 }
 
 repositories {
